@@ -510,8 +510,8 @@ public class TitlePageIndicator extends View implements PageIndicator {
         }
 
         System.out.println("======================================================");
-        System.out.println("footerLineHeight ============= " + footerLineHeight);
-        System.out.println("footerIndicatorLineHeight ============= " + footerIndicatorLineHeight);
+        System.out.println("footerLineHeight ============= " + footerLineHeight);//2
+        System.out.println("footerIndicatorLineHeight ============= " + footerIndicatorLineHeight);//4
         
         //Draw the footer line
         mPath.reset();
@@ -545,6 +545,7 @@ public class TitlePageIndicator extends View implements PageIndicator {
                 mPath.moveTo(leftMinusPadding, heightMinusLine);
                 mPath.lineTo(rightPlusPadding, heightMinusLine);
                 mPath.lineTo(rightPlusPadding, heightMinusLineMinusIndicator);
+                mPath.lineTo(leftMinusPadding + (-leftMinusPadding+rightPlusPadding)/2, heightMinusLineMinusIndicator-5);
                 mPath.lineTo(leftMinusPadding, heightMinusLineMinusIndicator);
                 mPath.close();
 
@@ -699,10 +700,10 @@ public class TitlePageIndicator extends View implements PageIndicator {
             bounds.top = 0;
             bounds.bottom = h;
             System.out.println("bounds=====================data================");
-            System.out.println("bounds left============= " + bounds.left);
-            System.out.println("bounds top============= " + bounds.top);
-            System.out.println("bounds right============= " + bounds.right);
-            System.out.println("bounds bottom============= " + bounds.bottom);
+            System.out.println("bounds left============= " + bounds.left);//615 1895 3175
+            System.out.println("bounds right============= " + bounds.right);//665 1945 3225
+            System.out.println("bounds top============= " + bounds.top);//0
+            System.out.println("bounds bottom============= " + bounds.bottom);//17
             list.add(bounds);
         }
 

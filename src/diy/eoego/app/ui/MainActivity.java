@@ -23,7 +23,7 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.above_slidingmenu);
 		
 		initControl();
-		
+		initClass();
 		initViewPager();
 		
 	}
@@ -32,6 +32,10 @@ public class MainActivity extends FragmentActivity {
 	private void initControl() {
 		mViewPager = (ViewPager) findViewById(R.id.above_pager);
 		mIndicator = (PageIndicator) findViewById(R.id.above_indicator);
+	}
+	
+	private void initClass() {
+		
 	}
 
 	private void initViewPager() {
