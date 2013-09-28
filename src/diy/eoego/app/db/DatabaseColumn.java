@@ -65,5 +65,5 @@ public abstract class DatabaseColumn implements BaseColumns {
 	
 	abstract public String getTableName();
 	abstract public Uri getTableContent();
-	abstract public Map<String, String> getTableMap();
+	abstract protected Map<String, String> getTableMap();
 }

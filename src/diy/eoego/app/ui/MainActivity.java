@@ -4,6 +4,7 @@ import diy.eoego.app.R;
 import diy.eoego.app.R.layout;
 import diy.eoego.app.R.menu;
 import diy.eoego.app.adapter.BasePageAdapter;
+import diy.eoego.app.biz.TopDao;
 import diy.eoego.app.indicator.PageIndicator;
 import android.os.Bundle;
 import android.app.Activity;
@@ -16,6 +17,8 @@ public class MainActivity extends FragmentActivity {
 	private ViewPager mViewPager;
 	private PageIndicator mIndicator;
 	private BasePageAdapter mBasePageAdapter;
+	
+	private TopDao topDao;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,7 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	private void initClass() {
-		
+		topDao = new TopDao(this);
 	}
 
 	private void initViewPager() {

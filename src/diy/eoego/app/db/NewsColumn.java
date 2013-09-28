@@ -28,7 +28,7 @@ public class NewsColumn extends DatabaseColumn {
 	}
 
 	@Override
-	public Map<String, String> getTableMap() {
+	protected Map<String, String> getTableMap() {
 		return mColumnMap;
 	}
 
