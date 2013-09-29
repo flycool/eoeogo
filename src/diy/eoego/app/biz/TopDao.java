@@ -36,6 +36,7 @@ public class TopDao extends BaseDao {
 					Urls.TOP_NEWS_URL + "",
 					Constants.WebSourceType.Json, 
 					Constants.DBContentType.Content_list, useCache);
+			System.out.println("resultNews====================== " + resultNews);
 			NewsMoreResponse newsMoreResponse = mObjectMapper.readValue(resultNews, new TypeReference<NewsMoreResponse>() {});
 			if (newsMoreResponse != null) {
 				newsCategory = newsMoreResponse.getResponse();
