@@ -545,7 +545,6 @@ public class TitlePageIndicator extends View implements PageIndicator {
                 mPath.moveTo(leftMinusPadding, heightMinusLine);
                 mPath.lineTo(rightPlusPadding, heightMinusLine);
                 mPath.lineTo(rightPlusPadding, heightMinusLineMinusIndicator);
-                mPath.lineTo(leftMinusPadding + (-leftMinusPadding+rightPlusPadding)/2, heightMinusLineMinusIndicator-5);
                 mPath.lineTo(leftMinusPadding, heightMinusLineMinusIndicator);
                 mPath.close();
 

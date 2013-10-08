@@ -13,6 +13,7 @@ import android.view.View;
 import diy.eoego.app.R;
 import diy.eoego.app.adapter.BasePageAdapter;
 import diy.eoego.app.biz.BaseDao;
+import diy.eoego.app.biz.BlogsDao;
 import diy.eoego.app.biz.TopDao;
 import diy.eoego.app.entity.CategorysEntity;
 import diy.eoego.app.indicator.PageIndicator;
@@ -24,6 +25,7 @@ public class MainActivity extends FragmentActivity {
 	private BasePageAdapter mBasePageAdapter;
 	
 	private TopDao topDao;
+	private BlogsDao blogsDao;
 	
 	private List<Object> categoryList;
 	
@@ -35,6 +37,7 @@ public class MainActivity extends FragmentActivity {
 		initControl();
 		initClass();
 		initViewPager();
+		initListView();
 		
 	}
 	
@@ -46,6 +49,7 @@ public class MainActivity extends FragmentActivity {
 	
 	private void initClass() {
 		topDao = new TopDao(this);
+		blogsDao = new BlogsDao(this);
 	}
 
 	private void initViewPager() {
@@ -56,6 +60,10 @@ public class MainActivity extends FragmentActivity {
 		mViewPager.setCurrentItem(0);
 		
 		new MyTask().execute(topDao);
+	}
+	
+	private void initListView() {
+		
 	}
 	
 	public class MyTask extends AsyncTask<BaseDao, String, Map<String, Object>> {

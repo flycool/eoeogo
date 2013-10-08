@@ -9,17 +9,23 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.type.TypeReference;
 
+
+
 import android.app.Activity;
 import diy.eoego.app.config.Constants;
 import diy.eoego.app.config.Urls;
+import diy.eoego.app.entity.BlogsCategoryListEntity;
+import diy.eoego.app.entity.BlogsMoreResponse;
 import diy.eoego.app.entity.CategorysEntity;
 import diy.eoego.app.entity.NewsCategoryListEntity;
 import diy.eoego.app.entity.NewsMoreResponse;
 import diy.eoego.app.utils.RequestCacheUtil;
+import diy.eoego.app.utils.Utility;
 
 public class TopDao extends BaseDao {
 	
-	private NewsCategoryListEntity newsCategory;
+	private NewsCategoryListEntity newsCategorys;
+	private BlogsCategoryListEntity blogsCategorys;
 	
 	List<CategorysEntity> tabs = new ArrayList<CategorysEntity>();
 	
@@ -39,9 +45,21 @@ public class TopDao extends BaseDao {
 			System.out.println("resultNews====================== " + resultNews);
 			NewsMoreResponse newsMoreResponse = mObjectMapper.readValue(resultNews, new TypeReference<NewsMoreResponse>() {});
 			if (newsMoreResponse != null) {
-				newsCategory = newsMoreResponse.getResponse();
+				newsCategorys = newsMoreResponse.getResponse();
 			}
 			
+			String resultBlogs = RequestCacheUtil.getRequestContent(mActivity,
+					Urls.TOP_BLOG_URL + Utility.getScreenParams(mActivity),
+					Constants.WebSourceType.Json,
+					Constants.DBContentType.Content_list, useCache);
+			System.out.println("sssssssssssssssssssssssss========");
+			BlogsMoreResponse blogsMoreResponse = mObjectMapper.readValue(
+					resultBlogs, new TypeReference<BlogsMoreResponse>() {
+					});
+			System.out.println("blogsMoreResponse====================" + blogsMoreResponse);
+			if (blogsMoreResponse != null) {
+				blogsCategorys = blogsMoreResponse.getResponse();
+			}
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -50,7 +68,7 @@ public class TopDao extends BaseDao {
 			e.printStackTrace();
 		}
 		
-		Collections.addAll(topCategorys, newsCategory);
+		Collections.addAll(topCategorys, newsCategorys, blogsCategorys);
 		
 		return topCategorys;
 	}

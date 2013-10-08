@@ -78,7 +78,12 @@ public class RequestCacheUtil {
 			String requestUrl, String source_type, String content_type,
 			DBHelper dbHelper) {
 		String result = "";
-		//result = HttpUtils.get....
+		// TODO AA
+		try {
+			result = HttpUtils.getByHttpClient(context, requestUrl);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (result == null || "".equals(result)) {
 			return result;
 		}
@@ -128,7 +133,7 @@ public class RequestCacheUtil {
 			dbHelper.ExecSQL(sql);
 		} else {
 			//add
-			String sql = "inset into " + RequestCacheColumn.TABLE_NAME + "(" +
+			String sql = "insert into " + RequestCacheColumn.TABLE_NAME + "(" +
 					RequestCacheColumn.URL + "," + 
 					RequestCacheColumn.SOURCE_TYPE + "," + 
 					RequestCacheColumn.Content_type + "," + 

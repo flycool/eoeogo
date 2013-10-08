@@ -12,13 +12,16 @@ public class BaseListFragment extends Fragment {
 	
 	protected XListView listView;
 	protected View view;
+	LayoutInflater mInflater;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+		mInflater = inflater;
 		view = inflater.inflate(R.layout.main, null);
 		listView = (XListView) view.findViewById(R.id.list_view);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
+	
+	
 }

@@ -3,8 +3,10 @@ package diy.eoego.app.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import diy.eoego.app.entity.BlogsCategoryListEntity;
 import diy.eoego.app.entity.CategorysEntity;
 import diy.eoego.app.entity.NewsCategoryListEntity;
+import diy.eoego.app.view.BlogFragment;
 import diy.eoego.app.view.NewsFragment;
 
 import android.app.Activity;
@@ -26,10 +28,13 @@ public class BasePageAdapter extends FragmentStatePagerAdapter {
 	
 	public void addFragment(List<CategorysEntity> mList, List<Object> listObject) {
 		tabs.addAll(mList);
+		System.out.println("listObject size====== " + listObject.size());
 		for (int i=0; i<listObject.size(); i++) {
 			Object object = listObject.get(i);
 			if (object instanceof NewsCategoryListEntity) {
 				addTab(new NewsFragment(mAcivity, (NewsCategoryListEntity)object));
+			} else if (object instanceof BlogsCategoryListEntity) {
+				addTab(new BlogFragment(mAcivity, (BlogsCategoryListEntity) object));
 			}
 		}
 	}
