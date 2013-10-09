@@ -7,11 +7,12 @@ import diy.eoego.app.entity.base.BaseContentList;
 public class BlogsCategoryListEntity extends BaseContentList {
 	private List<BlogContentItem> items;
 
-	public List<BlogContentItem> getItem() {
+	public List<BlogContentItem> getItems() {
 		return items;
 	}
 
-	public void setItem(List<BlogContentItem> items) {
+	public void setItems(List<BlogContentItem> items) {
 		this.items = items;
 	}
+
 }

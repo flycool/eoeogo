@@ -20,6 +20,7 @@ public class BaseListFragment extends Fragment {
 		mInflater = inflater;
 		view = inflater.inflate(R.layout.main, null);
 		listView = (XListView) view.findViewById(R.id.list_view);
+		System.out.println("baseListfragment listView=============== " + listView);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	

@@ -10,10 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import diy.eoego.app.R;
 import diy.eoego.app.entity.NewsCategoryListEntity;
 import diy.eoego.app.entity.NewsContentItem;
 
@@ -81,10 +82,34 @@ public class NewsFragment extends BaseListFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView tv = new TextView(mActivity);
-			tv.setText("hello eoe");
+			ViewHolder holder;
+			NewsContentItem item = mList.get(position);
+			if (convertView == null) {
+				holder = new ViewHolder();
+				convertView = mInflater
+						.inflate(R.layout.news_item_layout, null);
+				holder.title_ = (TextView) convertView
+						.findViewById(R.id.news_title);
+				holder.short_ = (TextView) convertView
+						.findViewById(R.id.news_short_content);
+				holder.img_thu = (ImageView) convertView
+						.findViewById(R.id.img_thu);
+				convertView.setTag(holder);
+			} else {
+				holder = (ViewHolder) convertView.getTag();
+			}
 			
-			return tv;
+			holder.title_.setText(item.getTitle());
+			holder.short_.setText(item.getShort_content());
+			String img_url = item.getThumbnail_url();
+			if (img_url.equals(null) || img_url.equals("")) {
+				holder.img_thu.setVisibility(View.GONE);
+			} else {
+				holder.img_thu.setVisibility(View.VISIBLE);
+				/*ImageUtil.setThumbnailView(img_url, holder.img_thu, mActivity,
+						callback1, false);*/
+			}
+			return convertView;
 		}
 		
 	}

@@ -359,8 +359,8 @@ public class TitlePageIndicator extends View implements PageIndicator {
         //Calculate views bounds
         ArrayList<Rect> bounds = calculateAllBounds(mPaintText);
         final int boundsSize = bounds.size();
-        System.out.println("boundsSize============ " + boundsSize);//3
-        System.out.println("mCurrentPage============ " + mCurrentPage);//0
+        //System.out.println("boundsSize============ " + boundsSize);//3
+        //System.out.println("mCurrentPage============ " + mCurrentPage);//0
 
         //Make sure we're on a page that still exists
         if (mCurrentPage >= boundsSize) {
@@ -377,11 +377,11 @@ public class TitlePageIndicator extends View implements PageIndicator {
         final int right = left + width;
         final float rightClip = right - mClipPadding;
         
-        System.out.println("getWidth()============== " + getWidth());//1280
-        System.out.println("getLeft()============== " + getLeft());//0
-        System.out.println("getHeight()============== " + getHeight());//37
-        System.out.println("mClipPadding============== " + mClipPadding);//4.0
-        System.out.println("right============== " + right);//1280
+        //System.out.println("getWidth()============== " + getWidth());//1280
+        //System.out.println("getLeft()============== " + getLeft());//0
+        //System.out.println("getHeight()============== " + getHeight());//37
+        //System.out.println("mClipPadding============== " + mClipPadding);//4.0
+        //System.out.println("right============== " + right);//1280
 
         int page = mCurrentPage;
         float offsetPercent;
@@ -392,23 +392,23 @@ public class TitlePageIndicator extends View implements PageIndicator {
             offsetPercent = 1 - mPageOffset;
         }
         
-        System.out.println("mPageOffset=========== " + mPageOffset);
-        System.out.println("offsetPercent=========== " + offsetPercent);
+        //System.out.println("mPageOffset=========== " + mPageOffset);
+       // System.out.println("offsetPercent=========== " + offsetPercent);
         
         final boolean currentSelected = (offsetPercent <= SELECTION_FADE_PERCENTAGE);
         final boolean currentBold = (offsetPercent <= BOLD_FADE_PERCENTAGE);
         final float selectedPercent = (SELECTION_FADE_PERCENTAGE - offsetPercent) / SELECTION_FADE_PERCENTAGE;
 
-        System.out.println("selectedPercent=========== " + selectedPercent);
-        System.out.println("");
+        //System.out.println("selectedPercent=========== " + selectedPercent);
+        //System.out.println("");
         
         //Verify if the current view must be clipped to the screen
         Rect curPageBound = bounds.get(mCurrentPage);
         float curPageWidth = curPageBound.right - curPageBound.left;
         
-        System.out.println("curPageBound.right========== " +curPageBound.right);//665
-        System.out.println("curPageBound.left========== " +curPageBound.left);//615
-        System.out.println("curPageWidth========== " + curPageWidth);//50
+        //System.out.println("curPageBound.right========== " +curPageBound.right);//665
+        //System.out.println("curPageBound.left========== " +curPageBound.left);//615
+       // System.out.println("curPageWidth========== " + curPageWidth);//50
         
         // leftClip 就是那个左箭头，
         if (curPageBound.left < leftClip) {
@@ -509,9 +509,9 @@ public class TitlePageIndicator extends View implements PageIndicator {
             footerIndicatorLineHeight = -footerIndicatorLineHeight;
         }
 
-        System.out.println("======================================================");
-        System.out.println("footerLineHeight ============= " + footerLineHeight);//2
-        System.out.println("footerIndicatorLineHeight ============= " + footerIndicatorLineHeight);//4
+        //System.out.println("======================================================");
+        //System.out.println("footerLineHeight ============= " + footerLineHeight);//2
+        //System.out.println("footerIndicatorLineHeight ============= " + footerIndicatorLineHeight);//4
         
         //Draw the footer line
         mPath.reset();
@@ -692,17 +692,17 @@ public class TitlePageIndicator extends View implements PageIndicator {
             Rect bounds = calcBounds(i, paint);
             int w = bounds.right - bounds.left;
             int h = bounds.bottom - bounds.top;
-            System.out.println("w================ " + w);//50
-            System.out.println("h================ " + h);//17
+            //System.out.println("w================ " + w);//50
+            //System.out.println("h================ " + h);//17
             bounds.left = (int)(halfWidth - (w / 2f) + ((i - mCurrentPage - mPageOffset) * width));
             bounds.right = bounds.left + w;
             bounds.top = 0;
             bounds.bottom = h;
-            System.out.println("bounds=====================data================");
-            System.out.println("bounds left============= " + bounds.left);//615 1895 3175
-            System.out.println("bounds right============= " + bounds.right);//665 1945 3225
-            System.out.println("bounds top============= " + bounds.top);//0
-            System.out.println("bounds bottom============= " + bounds.bottom);//17
+            //System.out.println("bounds=====================data================");
+            //System.out.println("bounds left============= " + bounds.left);//615 1895 3175
+            //System.out.println("bounds right============= " + bounds.right);//665 1945 3225
+            //System.out.println("bounds top============= " + bounds.top);//0
+            //System.out.println("bounds bottom============= " + bounds.bottom);//17
             list.add(bounds);
         }
 
@@ -829,14 +829,14 @@ public class TitlePageIndicator extends View implements PageIndicator {
             if (mFooterIndicatorStyle != IndicatorStyle.None) {
                 height += mFooterIndicatorHeight;
             }
-            System.out.println("mBounds.bottom============== " + mBounds.bottom);//17
-            System.out.println("mBounds.top============== " + mBounds.top);//0
+            //System.out.println("mBounds.bottom============== " + mBounds.bottom);//17
+            //System.out.println("mBounds.top============== " + mBounds.top);//0
             
-            System.out.println("mFooterLineHeight============== " + mFooterLineHeight);//2
-            System.out.println("mFooterIndicatorHeight============== " + mFooterIndicatorHeight);//4
+            //System.out.println("mFooterLineHeight============== " + mFooterLineHeight);//2
+            //System.out.println("mFooterIndicatorHeight============== " + mFooterIndicatorHeight);//4
             
-            System.out.println("mFooterPadding============== " + mFooterPadding);//7
-            System.out.println("mTopPadding============== " + mTopPadding);//7
+            //System.out.println("mFooterPadding============== " + mFooterPadding);//7
+            //System.out.println("mTopPadding============== " + mTopPadding);//7
         }
         final int measuredHeight = (int)height;
 

@@ -3,16 +3,17 @@ package diy.eoego.app.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import diy.eoego.app.entity.BlogsCategoryListEntity;
-import diy.eoego.app.entity.CategorysEntity;
-import diy.eoego.app.entity.NewsCategoryListEntity;
-import diy.eoego.app.view.BlogFragment;
-import diy.eoego.app.view.NewsFragment;
-
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import diy.eoego.app.entity.BlogsCategoryListEntity;
+import diy.eoego.app.entity.CategorysEntity;
+import diy.eoego.app.entity.NewsCategoryListEntity;
+import diy.eoego.app.entity.WikiCategoryListEntity;
+import diy.eoego.app.view.BlogFragment;
+import diy.eoego.app.view.NewsFragment;
+import diy.eoego.app.view.WikiFragment;
 
 public class BasePageAdapter extends FragmentStatePagerAdapter {
 	
@@ -28,13 +29,14 @@ public class BasePageAdapter extends FragmentStatePagerAdapter {
 	
 	public void addFragment(List<CategorysEntity> mList, List<Object> listObject) {
 		tabs.addAll(mList);
-		System.out.println("listObject size====== " + listObject.size());
 		for (int i=0; i<listObject.size(); i++) {
 			Object object = listObject.get(i);
 			if (object instanceof NewsCategoryListEntity) {
 				addTab(new NewsFragment(mAcivity, (NewsCategoryListEntity)object));
 			} else if (object instanceof BlogsCategoryListEntity) {
 				addTab(new BlogFragment(mAcivity, (BlogsCategoryListEntity) object));
+			} else if (object instanceof WikiCategoryListEntity) {
+				addTab(new WikiFragment(mAcivity, (WikiCategoryListEntity) object));
 			}
 		}
 	}

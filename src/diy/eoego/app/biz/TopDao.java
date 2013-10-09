@@ -19,6 +19,8 @@ import diy.eoego.app.entity.BlogsMoreResponse;
 import diy.eoego.app.entity.CategorysEntity;
 import diy.eoego.app.entity.NewsCategoryListEntity;
 import diy.eoego.app.entity.NewsMoreResponse;
+import diy.eoego.app.entity.WikiCategoryListEntity;
+import diy.eoego.app.entity.WikiMoreResponse;
 import diy.eoego.app.utils.RequestCacheUtil;
 import diy.eoego.app.utils.Utility;
 
@@ -26,6 +28,7 @@ public class TopDao extends BaseDao {
 	
 	private NewsCategoryListEntity newsCategorys;
 	private BlogsCategoryListEntity blogsCategorys;
+	private WikiCategoryListEntity wikiCategorys;
 	
 	List<CategorysEntity> tabs = new ArrayList<CategorysEntity>();
 	
@@ -42,7 +45,6 @@ public class TopDao extends BaseDao {
 					Urls.TOP_NEWS_URL + "",
 					Constants.WebSourceType.Json, 
 					Constants.DBContentType.Content_list, useCache);
-			System.out.println("resultNews====================== " + resultNews);
 			NewsMoreResponse newsMoreResponse = mObjectMapper.readValue(resultNews, new TypeReference<NewsMoreResponse>() {});
 			if (newsMoreResponse != null) {
 				newsCategorys = newsMoreResponse.getResponse();
@@ -52,14 +54,24 @@ public class TopDao extends BaseDao {
 					Urls.TOP_BLOG_URL + Utility.getScreenParams(mActivity),
 					Constants.WebSourceType.Json,
 					Constants.DBContentType.Content_list, useCache);
-			System.out.println("sssssssssssssssssssssssss========");
 			BlogsMoreResponse blogsMoreResponse = mObjectMapper.readValue(
 					resultBlogs, new TypeReference<BlogsMoreResponse>() {
 					});
-			System.out.println("blogsMoreResponse====================" + blogsMoreResponse);
 			if (blogsMoreResponse != null) {
 				blogsCategorys = blogsMoreResponse.getResponse();
 			}
+			
+			String resultWiki = RequestCacheUtil.getRequestContent(mActivity,
+					Urls.TOP_WIKI_URL + Utility.getScreenParams(mActivity),
+					Constants.WebSourceType.Json,
+					Constants.DBContentType.Content_list, useCache);
+			WikiMoreResponse wikiMoreResponse = mObjectMapper.readValue(
+					resultWiki, new TypeReference<WikiMoreResponse>() {
+					});
+			if (wikiMoreResponse != null) {
+				this.wikiCategorys = wikiMoreResponse.getResponse();
+			}
+			
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -68,7 +80,7 @@ public class TopDao extends BaseDao {
 			e.printStackTrace();
 		}
 		
-		Collections.addAll(topCategorys, newsCategorys, blogsCategorys);
+		Collections.addAll(topCategorys, newsCategorys, blogsCategorys, wikiCategorys);
 		
 		return topCategorys;
 	}
@@ -78,8 +90,8 @@ public class TopDao extends BaseDao {
 		CategorysEntity cate2 = new CategorysEntity();
 		CategorysEntity cate3 = new CategorysEntity();
 		cate1.setName("精选资讯");
-		cate1.setName("精选博客");
-		cate1.setName("精选教程");
+		cate2.setName("精选博客");
+		cate3.setName("精选教程");
 		Collections.addAll(tabs, cate1, cate2, cate3);
 		return tabs;
 	}

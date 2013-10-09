@@ -17,6 +17,7 @@ import android.widget.TextView;
 import diy.eoego.app.R;
 import diy.eoego.app.entity.BlogContentItem;
 import diy.eoego.app.entity.BlogsCategoryListEntity;
+import diy.eoego.app.widget.XListView;
 
 @SuppressLint("ValidFragment")
 public class BlogFragment extends BaseListFragment {
@@ -26,6 +27,7 @@ public class BlogFragment extends BaseListFragment {
 	private String more_url;
 	private BlogsCategoryListEntity loadMoreEntity;
 	private MyAdapter mAdapter;
+	private LayoutInflater mInflater;
 	
 	public BlogFragment() {}
 	
@@ -33,14 +35,17 @@ public class BlogFragment extends BaseListFragment {
 		this.mActivity = c;
 		if (categorys != null) {
 			more_url = categorys.getMore_url();
-			this.items_list = categorys.getItem();
+			this.items_list = categorys.getItems();
 		}
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		mInflater = inflater;
 		mAdapter = new MyAdapter(items_list);
+		view = inflater.inflate(R.layout.main, null);
+		listView = (XListView) view.findViewById(R.id.list_view);
 		listView.setAdapter(mAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
