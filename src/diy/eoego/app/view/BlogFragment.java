@@ -17,6 +17,7 @@ import android.widget.TextView;
 import diy.eoego.app.R;
 import diy.eoego.app.entity.BlogContentItem;
 import diy.eoego.app.entity.BlogsCategoryListEntity;
+import diy.eoego.app.utils.ImageUtil;
 import diy.eoego.app.widget.XListView;
 
 @SuppressLint("ValidFragment")
@@ -110,8 +111,8 @@ public class BlogFragment extends BaseListFragment {
 				holder.img_thu.setVisibility(View.GONE);
 			} else {
 				holder.img_thu.setVisibility(View.VISIBLE);
-				/*ImageUtil.setThumbnailView(url, holder.img_thu, mActivity,
-						callback1, false);*/
+				ImageUtil.setThumbnailView(url, holder.img_thu, mActivity,
+						callback1, false);
 			}
 			
 			return convertView;

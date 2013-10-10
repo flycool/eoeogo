@@ -1,16 +1,19 @@
 package diy.eoego.app.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -22,6 +25,7 @@ import android.os.Message;
 import android.widget.ImageView;
 import diy.eoego.app.R;
 import diy.eoego.app.db.DBHelper;
+import diy.eoego.app.db.ImageCacheColumn;
 
 public class ImageUtil {
 	
@@ -83,7 +87,7 @@ public class ImageUtil {
 		}
 	}
 
-	private static Bitmap loadThumbnailImage(final String imagePath, final String imageUrl,
+	public static Bitmap loadThumbnailImage(final String imagePath, final String imageUrl,
 			final DBHelper dbHelper, final ImageCallback callback, final boolean b) {
 		if (imageCache.containsKey(imageUrl)) {
 			SoftReference reference = imageCache.get(imageUrl);
@@ -127,8 +131,8 @@ public class ImageUtil {
 						handler.sendMessage(msg);
 						
 						if (bitmap != null) {
-							//saveImage(imagePath, bitmap);
-							//saveImageByDB(imageUrl, dbHelper);
+							saveImage(imagePath, bitmap);
+							saveImageByDB(imageUrl, dbHelper);
 						}
 					} catch (MalformedURLException e) {
 						e.printStackTrace();
@@ -136,20 +140,101 @@ public class ImageUtil {
 						e.printStackTrace();
 					}
 				}
+
 			};
+			ThreadPoolManager.getInstance().addTask(runnable);
 		}
 		
 		return null;
 	}
 
-	private static Bitmap getImageFromDB(String imagePath, String imageUrl,
-			DBHelper dbHelper) {
+	public static void saveImage(String imagePath, Bitmap bitmap) {
+		if (bitmap == null || imagePath == null || "".equals(imagePath)) {
+			return;
+		}
 		
+		File f = new File(imagePath);
+		if (f.exists()) return;
 		
-		return null;
+		File parentFile = f.getParentFile();
+		if (!parentFile.exists()) {
+			parentFile.mkdirs();
+		}
+		try {
+			f.createNewFile();
+			FileOutputStream fos = new FileOutputStream(f);
+			bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+			fos.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			f.delete();
+		}
+		
 	}
 	
+	private static void saveImageByDB(String imageUrl, DBHelper dbHelper) {
+		String sql = null;
+		if (queryFromDBbyImgUrl(dbHelper, imageUrl).moveToFirst()) {
+			sql = "update " + ImageCacheColumn.TABLE_NAME + " set "
+					+ ImageCacheColumn.TIMESTAMP + "='"
+					+ (new Date().getTime()) + "' where "
+					+ ImageCacheColumn.Url + "='" + imageUrl + "'";
+		} else {
+			sql = "insert into " + ImageCacheColumn.TABLE_NAME + "("
+					+ ImageCacheColumn.Url + "," + ImageCacheColumn.TIMESTAMP
+					+ "," + ImageCacheColumn.PAST_TIME + ") values('"
+					+ imageUrl + "'," + (new Date().getTime()) + "," + dayCount
+					+ ")";
+		}
+		dbHelper.ExecSQL(sql);
+	}
 	
+	private static Bitmap getImageFromDB(String imagePath, String imageUrl,
+			DBHelper dbHelper) {
+		Cursor cursor = queryFromDBbyImgUrl(dbHelper, imageUrl);
+		if (cursor.moveToFirst()) {
+			long currTimestamp = (new Date()).getTime();
+			long timestamp = cursor.getLong(cursor
+					.getColumnIndex(ImageCacheColumn.TIMESTAMP));
+			long spanTime = currTimestamp - timestamp;
+			int Past_time = cursor.getInt(cursor
+					.getColumnIndex(ImageCacheColumn.PAST_TIME));
+			if (spanTime > Past_time * 24 * 60 * 60 * 1000) {
+				// 过期
+				// 删除本地文件
+				deleteImageFromLocal(imagePath);
+				return null;
+			} else {
+				// 没过期
+				return getImageFromLocal(imagePath);
+			}
+		} else {
+			return null;
+		}
+	}
+
+	private static Cursor queryFromDBbyImgUrl(DBHelper dbHelper, String imageUrl) {
+		return dbHelper.rawQuery("select * from " + ImageCacheColumn.TABLE_NAME + " where " + 
+					ImageCacheColumn.Url + "='" + imageUrl + "'", null);
+	}
+	
+	private static void deleteImageFromLocal(String imagePath) {
+		File file = new File(imagePath);
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+	
+	private static Bitmap getImageFromLocal(String imagePath) {
+		File file = new File(imagePath);
+		if (file.exists()) {
+			Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+			file.setLastModified(System.currentTimeMillis());
+			return bitmap;
+		}
+		return null;
+	}
 	
 	
 	
