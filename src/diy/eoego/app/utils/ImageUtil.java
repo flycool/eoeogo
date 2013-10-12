@@ -73,7 +73,7 @@ public class ImageUtil {
 	}
 	
 	public static boolean hasExternalCacheDir() {
-		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 	}
 	
 	private static void setThumbnailImage(ImageView image, String imageUrl,

@@ -30,9 +30,10 @@ public class BaseListFragment extends Fragment {
 	ImageUtil.ImageCallback callback1 = new ImageCallback() {
 		@Override
 		public void loadImage(Bitmap bitmap, String imagePath) {
-			System.out.println("imagePath====UI loadImage====== " + imagePath);
 			ImageView img = (ImageView) listView.findViewWithTag(imagePath);
-			img.setImageBitmap(bitmap);
+			if (img != null) {
+				img.setImageBitmap(bitmap);
+			}
 			
 		}
 	};
