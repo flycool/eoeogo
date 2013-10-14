@@ -26,9 +26,9 @@ public class XListViewHeader extends LinearLayout {
 	
 	private static final int ROTATE_ANIM_DURATION = 180;
 			
-	private static final int STATE_NORMAL = 0;		
-	private static final int STATE_READY = 1;		
-	private static final int STATE_REFRESHING = 2;		
+	public static final int STATE_NORMAL = 0;		
+	public static final int STATE_READY = 1;		
+	public static final int STATE_REFRESHING = 2;		
 	
 
 	public XListViewHeader(Context context) {

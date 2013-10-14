@@ -44,9 +44,13 @@ public class BlogFragment extends BaseListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		mInflater = inflater;
+		// construct the RelativeLayout
 		mAdapter = new MyAdapter(items_list);
 		view = inflater.inflate(R.layout.main, null);
 		listView = (XListView) view.findViewById(R.id.list_view);
+		listView.setXListViewListener(this);
+		listView.setPullLoadEnable(true);
+		listView.setPullRefreshEnable(false);
 		listView.setAdapter(mAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override

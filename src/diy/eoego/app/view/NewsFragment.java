@@ -43,6 +43,7 @@ public class NewsFragment extends BaseListFragment {
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		
+		listView.setXListViewListener(this);
 		mAdapter = new MyAdapter(items_list);
 		listView.setAdapter(mAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {

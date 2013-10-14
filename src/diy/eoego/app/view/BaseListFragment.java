@@ -11,8 +11,9 @@ import diy.eoego.app.R;
 import diy.eoego.app.utils.ImageUtil;
 import diy.eoego.app.utils.ImageUtil.ImageCallback;
 import diy.eoego.app.widget.XListView;
+import diy.eoego.app.widget.XListView.IXListViewListener;
 
-public class BaseListFragment extends Fragment {
+public class BaseListFragment extends Fragment implements IXListViewListener {
 	
 	protected XListView listView;
 	protected View view;
@@ -24,7 +25,16 @@ public class BaseListFragment extends Fragment {
 		mInflater = inflater;
 		view = inflater.inflate(R.layout.main, null);
 		listView = (XListView) view.findViewById(R.id.list_view);
+		listView.setPullLoadEnable(true);
+		listView.setPullRefreshEnable(false);
+		System.out.println("base listview============ " + listView);
 		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+	
+	protected void onLoad() {
+		listView.stopRefresh();
+		listView.stopLoadMore();
+		listView.setRefreshTime("just now");
 	}
 	
 	ImageUtil.ImageCallback callback1 = new ImageCallback() {
@@ -37,4 +47,14 @@ public class BaseListFragment extends Fragment {
 			
 		}
 	};
+
+	@Override
+	public void onRefresh() {
+		
+	}
+
+	@Override
+	public void onLoadMore() {
+		
+	}
 }

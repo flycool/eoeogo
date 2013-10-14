@@ -1,24 +1,47 @@
 package diy.eoego.app.widget;
 
-import diy.eoego.app.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
+import diy.eoego.app.R;
 
 public class XListView extends ListView implements OnScrollListener {
+
+	private float mLastY = -1;
 	
 	private Scroller mScroller;
+	
+	private IXListViewListener mListViewListener;
 	
 	private XListViewHeader mHeaderView;
 	private RelativeLayout mHeaderViewContent;
 	private TextView mHeaderTimeView;
+	private int mHeaderViewHeight;
+	
+	private int mScrollBack;
+	private final static int SCROLLBACK_HEADER = 0;
+	private final static int SCROLLBACK_FOOTER = 1;
+	
+	private final static int SCROLL_DURATION = 400;
+	
+	// header view
+	private boolean mEnablePullRefresh = true;
+	private boolean mPullRefreshing = false;
+	
+	// footer view
+	private boolean mEnablePullLoad;
+	
+	private final static float OFFSET_RADIO = 1.8f;
 
 	public XListView(Context context) {
 		super(context);
@@ -45,24 +68,133 @@ public class XListView extends ListView implements OnScrollListener {
 		mHeaderTimeView = (TextView) mHeaderView.findViewById(R.id.xlistview_header_time);
 		addHeaderView(mHeaderView);
 		
+		//init header height
+		mHeaderView.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				mHeaderViewHeight = mHeaderViewContent.getHeight();
+				getViewTreeObserver().removeGlobalOnLayoutListener(this);
+			}
+		});
+		
 	}
 	
 	@Override
+	public void setAdapter(ListAdapter adapter) {
+		
+		super.setAdapter(adapter);
+	}
+	
+	public void setPullRefreshEnable(boolean enable) {
+		mEnablePullRefresh = enable;
+		if (!mEnablePullRefresh) {
+			mHeaderViewContent.setVisibility(View.INVISIBLE);
+		} else {
+			mHeaderViewContent.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	public void setPullLoadEnable(boolean enable) {
+		mEnablePullLoad = enable;
+		
+	}
+	
+	public void stopRefresh() {
+		if (mPullRefreshing) {
+			mPullRefreshing = false;
+			resetHeaderHeight();
+		}
+	}
+	
+	public void stopLoadMore() {
+		
+	}
+	
+	public void setRefreshTime(String time) {
+		mHeaderTimeView.setText(time);
+	}
+	
+	
+	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
+		if (mLastY == -1) {
+			mLastY = ev.getRawY();
+		}
+		
+		switch (ev.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			mLastY = ev.getRawY();
+			break;
+		case MotionEvent.ACTION_MOVE:
+			final float deltaY = ev.getRawY() - mLastY;
+			mLastY = ev.getRawY();
+			if (getFirstVisiblePosition() == 0 &&
+					(mHeaderView.getVisiableHeight() > 0 || deltaY > 0)) {
+				updateHeaderHeight(deltaY / OFFSET_RADIO);
+			}
+			break;
+		default:
+			System.out.println("reset header height=====");
+			mLastY = -1;
+			if (getFirstVisiblePosition() == 0) {
+				if (mEnablePullRefresh && mHeaderView.getVisiableHeight() > mHeaderViewHeight) {
+					mPullRefreshing = true;
+					mHeaderView.setState(XListViewHeader.STATE_REFRESHING);
+				}
+				resetHeaderHeight();
+			}
+			break;
+		}
+		
 		return super.onTouchEvent(ev);
 	}
 	
 	
+	public void setXListViewListener(IXListViewListener l) {
+		mListViewListener = l;
+	}
 	
 	
 	
 	
-	
-	
-	
-	
-	
-	
+	private void resetHeaderHeight() {
+		int height = mHeaderView.getVisiableHeight();
+		if (height == 0) return;
+		if (mPullRefreshing && height < mHeaderViewHeight) {
+			return;
+		}
+		int finalHeight = 0;
+		if (mPullRefreshing && height > mHeaderViewHeight) {
+			finalHeight = mHeaderViewHeight;
+		}
+		mScrollBack = SCROLLBACK_HEADER;
+		mScroller.startScroll(0, height, 0, finalHeight - height, SCROLL_DURATION);
+		invalidate();
+	}
+
+	private void updateHeaderHeight(float delta) {
+		mHeaderView.setVisiableHeight((int)delta + mHeaderView.getVisiableHeight());
+		if (mEnablePullRefresh && !mPullRefreshing) {
+			if (mHeaderView.getVisiableHeight() > mHeaderViewHeight) {
+				mHeaderView.setState(XListViewHeader.STATE_READY);
+			} else {
+				mHeaderView.setState(XListViewHeader.STATE_NORMAL);
+			}
+		}
+		setSelection(0);
+	}
+
+	@Override
+	public void computeScroll() {
+		if (mScroller.computeScrollOffset()) {
+			if (mScrollBack == SCROLLBACK_HEADER) {
+				mHeaderView.setVisiableHeight(mScroller.getCurrY());
+			} else {
+				
+			}
+			super.computeScroll();
+		}
+	}
 	
 	
 	
@@ -78,6 +210,12 @@ public class XListView extends ListView implements OnScrollListener {
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		
+	}
+	
+	public interface IXListViewListener {
+		public void onRefresh();
+
+		public void onLoadMore();
 	}
 
 }
