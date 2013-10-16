@@ -42,11 +42,10 @@ public class RequestCacheUtil {
 	private static String getExternalCacheDir(Context context) {
 		//after android 2.2
 		if (hasExternalCacheDir()) {
-			System.out.println("path============ " + context.getExternalCacheDir());
 			return context.getExternalCacheDir().getParent() + File.separator + "request";
 		}
 		final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/request/";
-		return Environment.getExternalStorageDirectory().getParent() + cacheDir;
+		return Environment.getExternalStorageDirectory().getPath() + cacheDir;
 	}
 	
 	private static boolean hasExternalCacheDir() {

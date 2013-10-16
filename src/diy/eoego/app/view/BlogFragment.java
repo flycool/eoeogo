@@ -6,6 +6,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import diy.eoego.app.R;
+import diy.eoego.app.biz.BlogsDao;
 import diy.eoego.app.entity.BlogContentItem;
 import diy.eoego.app.entity.BlogsCategoryListEntity;
+import diy.eoego.app.entity.BlogsMoreResponse;
 import diy.eoego.app.utils.ImageUtil;
 import diy.eoego.app.widget.XListView;
 
@@ -67,6 +70,12 @@ public class BlogFragment extends BaseListFragment {
 
 		public MyAdapter(List<BlogContentItem> list) {
 			mList.addAll(list);
+			notifyDataSetChanged();
+		}
+		
+		public void appendToList(List<BlogContentItem> lists) {
+			if (lists == null) return;
+			mList.addAll(lists);
 			notifyDataSetChanged();
 		}
 		
@@ -129,5 +138,41 @@ public class BlogFragment extends BaseListFragment {
 		public TextView title;
 		public TextView short_;
 		public ImageView img_thu;
+	}
+
+	@Override
+	public void onRefresh() {
+		onLoad();
+	}
+	
+	private Handler mHandler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				more_url = loadMoreEntity.getMore_url();
+				mAdapter.appendToList(loadMoreEntity.getItems());
+				break;
+			}
+			onLoad();
+		};
+	};
+
+	@Override
+	public void onLoadMore() {
+		if (more_url.equals(null) || more_url.equals("")) {
+			mHandler.sendEmptyMessage(1);
+			return;
+		} else {
+			new Thread() {
+				@Override
+				public void run() {
+					BlogsMoreResponse response = new BlogsDao(mActivity).getMore(more_url);
+					if (response != null) {
+						loadMoreEntity = response.getResponse();
+						mHandler.sendEmptyMessage(0);
+					}
+				}
+			}.start();
+		}
 	}
 }

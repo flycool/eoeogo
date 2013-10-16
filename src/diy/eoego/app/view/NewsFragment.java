@@ -6,6 +6,8 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import diy.eoego.app.R;
+import diy.eoego.app.biz.NewsDao;
 import diy.eoego.app.entity.NewsCategoryListEntity;
 import diy.eoego.app.entity.NewsContentItem;
+import diy.eoego.app.entity.NewsMoreResponse;
+import diy.eoego.app.utils.ImageUtil;
 
 @SuppressLint("ValidFragment")
 public class NewsFragment extends BaseListFragment {
@@ -24,9 +29,24 @@ public class NewsFragment extends BaseListFragment {
 	private Activity mActivity;
 	private String more_url;
 	private List<NewsContentItem> items_list = new ArrayList<NewsContentItem>();
-	
 	private MyAdapter mAdapter;
-
+	private NewsCategoryListEntity loadMoreEntity;
+	
+	private Handler mHandler = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what) {
+			case 0:
+				more_url = loadMoreEntity.getMore_url();
+				mAdapter.appendToList(loadMoreEntity.getItems());
+				break;
+			}
+			onLoad();
+		}
+		
+	};
+	
+	
 	public NewsFragment() {}
 	
 	
@@ -63,6 +83,12 @@ public class NewsFragment extends BaseListFragment {
 		
 		public MyAdapter(List<NewsContentItem> list) {
 			mList = list;
+			notifyDataSetChanged();
+		}
+		
+		public void appendToList(List<NewsContentItem> lists) {
+			if(lists == null) return;
+			mList.addAll(lists);
 			notifyDataSetChanged();
 		}
 		
@@ -107,8 +133,8 @@ public class NewsFragment extends BaseListFragment {
 				holder.img_thu.setVisibility(View.GONE);
 			} else {
 				holder.img_thu.setVisibility(View.VISIBLE);
-				/*ImageUtil.setThumbnailView(img_url, holder.img_thu, mActivity,
-						callback1, false);*/
+				ImageUtil.setThumbnailView(img_url, holder.img_thu, mActivity,
+						callback1, false);
 			}
 			return convertView;
 		}
@@ -119,6 +145,32 @@ public class NewsFragment extends BaseListFragment {
 		public TextView title_;
 		public TextView short_;
 		public ImageView img_thu;
+	}
+
+	@Override
+	public void onRefresh() {
+		onLoad();
+	}
+
+
+	@Override
+	public void onLoadMore() {
+		if (more_url == null || "".equals(more_url)) {
+			mHandler.sendEmptyMessage(1);
+			return;
+		} else {
+			new Thread() {
+				@Override
+				public void run() {
+					NewsMoreResponse response = new NewsDao(mActivity).getMore(more_url);
+					if (response != null) {
+						loadMoreEntity = response.getResponse();
+						mHandler.sendEmptyMessage(0);
+					}
+				}
+				
+			}.start();
+		}
 	}
 	
 }

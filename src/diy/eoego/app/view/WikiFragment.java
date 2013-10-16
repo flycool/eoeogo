@@ -97,4 +97,14 @@ public class WikiFragment extends BaseListFragment {
 		public TextView title_;
 		public TextView short_;
 	}
+
+	@Override
+	public void onRefresh() {
+		onLoad();
+	}
+
+	@Override
+	public void onLoadMore() {
+		
+	}
 }

@@ -17,8 +17,10 @@ public class MD5 {
 	}
 	
 	final public static String encode(String source) {
-		byte[] encodedBytes = sDigest.digest(source.getBytes());
-		return new String(encodedBytes);
+		byte[] btyes = source.getBytes();
+		byte[] encodedBytes = sDigest.digest(btyes);
+
+		return Utility.hexString(encodedBytes);
 	}
 	
 }

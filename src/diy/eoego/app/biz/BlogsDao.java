@@ -10,6 +10,7 @@ import android.app.Activity;
 import diy.eoego.app.config.Constants;
 import diy.eoego.app.config.Urls;
 import diy.eoego.app.entity.BlogsJson;
+import diy.eoego.app.entity.BlogsMoreResponse;
 import diy.eoego.app.entity.BlogsResponseEntity;
 import diy.eoego.app.utils.RequestCacheUtil;
 import diy.eoego.app.utils.Utility;
@@ -53,6 +54,27 @@ public class BlogsDao extends BaseDao {
 		}
 			
 		return blogsResponse;
+	}
+	
+	public BlogsMoreResponse getMore(String more_url) {
+		BlogsMoreResponse response;
+		try {
+			String result = RequestCacheUtil.getRequestContent(mActivity,
+					more_url + Utility.getScreenParams(mActivity),
+					Constants.WebSourceType.Json,
+					Constants.DBContentType.Content_list, true);
+			response = mObjectMapper.readValue(result,
+					new TypeReference<BlogsMoreResponse>() {
+					});
+			return response;
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 }

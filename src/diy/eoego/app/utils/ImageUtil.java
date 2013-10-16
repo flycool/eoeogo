@@ -1,6 +1,7 @@
 package diy.eoego.app.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,21 +155,26 @@ public class ImageUtil {
 		}
 		
 		File f = new File(imagePath);
-		if (f.exists()) return;
-		
-		File parentFile = f.getParentFile();
-		if (!parentFile.exists()) {
-			parentFile.mkdirs();
-		}
-		try {
-			f.createNewFile();
-			FileOutputStream fos = new FileOutputStream(f);
-			bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-			fos.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			f.delete();
+		if (f.exists()) {
+			return;
+		} else {
+			try {
+				File parentFile = f.getParentFile();
+				if (!parentFile.exists()) {
+					parentFile.mkdirs();
+				}
+				f.createNewFile();
+				FileOutputStream fos;
+				fos = new FileOutputStream(f);
+				bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+				fos.close();
+			} catch (FileNotFoundException e) {
+				f.delete();
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+				f.delete();
+			}
 		}
 		
 	}
