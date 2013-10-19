@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -80,23 +81,30 @@ public class ImageUtil {
 	private static void setThumbnailImage(ImageView image, String imageUrl,
 			String cachePath, DBHelper dbHelper, ImageCallback callback,
 			boolean b) {
-		Bitmap bitmap = loadThumbnailImage(cachePath, imageUrl, dbHelper, callback, b);
-		if (bitmap == null) {
+		loadThumbnailImage(cachePath, imageUrl, dbHelper, callback, image);
+		/*if (bitmap == null) {
 			image.setImageResource(default_img);
 		} else {
 			image.setImageBitmap(bitmap);
-		}
+		}*/
 	}
 
-	public static Bitmap loadThumbnailImage(final String imagePath, final String imageUrl,
-			final DBHelper dbHelper, final ImageCallback callback, final boolean b) {
+	public static void loadThumbnailImage(final String imagePath, final String imageUrl,
+			final DBHelper dbHelper, final ImageCallback callback, final ImageView image) {
 		if (imageCache.containsKey(imageUrl)) {
 			SoftReference reference = imageCache.get(imageUrl);
 			Bitmap bitmap = (Bitmap) reference.get();
-			if (bitmap != null) return bitmap;
+			if (bitmap != null) {
+				image.setImageBitmap(bitmap);
+				return;
+			}
 		}
 		
-		Bitmap bm = getImageFromDB(imagePath, imageUrl, dbHelper);
+		//FIX operate database should use work Thread
+		final GetDataFromDBTask task = new GetDataFromDBTask(image);
+		task.execute(imagePath, imageUrl, dbHelper, callback);
+		
+		/*Bitmap bm = getImageFromDB(imagePath, imageUrl, dbHelper);
 		if (bm != null) {
 			return bm;
 		} else {
@@ -144,8 +152,86 @@ public class ImageUtil {
 
 			};
 			ThreadPoolManager.getInstance().addTask(runnable);
-		}
+		}*/
 		
+	}
+	
+	private static void callBackLoadBitmap(final ImageCallback callback, final String imagePath, final String imageUrl,
+			final DBHelper dbHelper) {
+		final Handler handler = new Handler() {
+			public void handleMessage(Message msg) {
+				if (msg.obj != null) {
+					callback.loadImage((Bitmap)msg.obj, imagePath);
+				}
+			}
+		};
+		
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				URL url;
+				try {
+					url = new URL(imageUrl);
+				
+					URLConnection conn = url.openConnection();
+					conn.setConnectTimeout(5000);
+					conn.setReadTimeout(5000);
+					conn.connect();
+					
+					InputStream in = conn.getInputStream();
+					BitmapFactory.Options options = new Options();
+					options.inSampleSize = 1;
+					Bitmap bitmap = BitmapFactory.decodeStream(in, new Rect(0, 0, 0, 0), options);
+					
+					imageCache.put(imageUrl, new SoftReference(bitmap));
+					
+					Message msg = handler.obtainMessage();
+					msg.obj = bitmap;
+					handler.sendMessage(msg);
+					
+					if (bitmap != null) {
+						saveImage(imagePath, bitmap);
+						saveImageByDB(imageUrl, dbHelper);
+					}
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+		};
+		ThreadPoolManager.getInstance().addTask(runnable);
+	}
+	
+	private static Bitmap getBitmapFromWeb(final ImageCallback callback, final String imagePath, final String imageUrl,
+			final DBHelper dbHelper) {
+		URL url;
+		try {
+			url = new URL(imageUrl);
+		
+			URLConnection conn = url.openConnection();
+			conn.setConnectTimeout(5000);
+			conn.setReadTimeout(5000);
+			conn.connect();
+			
+			InputStream in = conn.getInputStream();
+			BitmapFactory.Options options = new Options();
+			options.inSampleSize = 1;
+			Bitmap bitmap = BitmapFactory.decodeStream(in, new Rect(0, 0, 0, 0), options);
+			
+			imageCache.put(imageUrl, new SoftReference(bitmap));
+			
+			if (bitmap != null) {
+				saveImage(imagePath, bitmap);
+				saveImageByDB(imageUrl, dbHelper);
+			}
+			return bitmap;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -196,6 +282,43 @@ public class ImageUtil {
 		dbHelper.ExecSQL(sql);
 	}
 	
+	private static class GetDataFromDBTask extends AsyncTask<Object, Void, Bitmap> {
+
+		ImageView imageView;
+		String imagePath;
+		String imageUrl;
+		DBHelper dbHelper;
+		ImageCallback callback;
+		
+		public GetDataFromDBTask(ImageView img) {
+			imageView = img;
+		}
+		
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			if (result != null) {
+				imageView.setImageBitmap(result);
+			} else {
+				imageView.setImageResource(default_img);
+			}
+		}
+
+		@Override
+		protected Bitmap doInBackground(Object... params) {
+			imagePath = (String)params[0];
+			imageUrl = (String)params[1];
+			dbHelper = (DBHelper)params[2];
+			callback = (ImageCallback)params[3];
+			Bitmap bm = getImageFromDB(imagePath, imageUrl, dbHelper);
+			if (bm != null) {
+				return bm;
+			} else {
+				return getBitmapFromWeb(callback, imagePath, imageUrl, dbHelper);
+			}
+		}
+
+	}
+	
 	private static Bitmap getImageFromDB(String imagePath, String imageUrl,
 			DBHelper dbHelper) {
 		Cursor cursor = queryFromDBbyImgUrl(dbHelper, imageUrl);
@@ -241,36 +364,5 @@ public class ImageUtil {
 		}
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

@@ -124,8 +124,9 @@ public class BlogFragment extends BaseListFragment {
 				holder.img_thu.setVisibility(View.GONE);
 			} else {
 				holder.img_thu.setVisibility(View.VISIBLE);
-				ImageUtil.setThumbnailView(url, holder.img_thu, mActivity,
-						callback1, false);
+				//ImageUtil.setThumbnailView(url, holder.img_thu, mActivity,
+					//	callback1, false);
+				mImageFetcher.loadImage(url, holder.img_thu);
 			}
 			
 			return convertView;

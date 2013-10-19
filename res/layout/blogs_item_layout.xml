@@ -15,7 +15,7 @@
         android:gravity="center"
         android:orientation="vertical" >
 
-        <ImageView
+        <diy.eoego.app.utils.bitmapfun.RecyclingImageView
             android:id="@+id/img_thu"
             android:layout_width="48dp"
             android:layout_height="48dp"
